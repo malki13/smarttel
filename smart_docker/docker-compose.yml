@@ -1,0 +1,63 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:10
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PW}
+      - POSTGRES_USER=${DB_USER}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  monoliticov2:
+    container_name: monoliticov2
+    image: monoliticov2:latest
+    build: ./monolitico
+    restart: always
+    working_dir: /home
+    ports:
+      - 8099:8099
+    depends_on:
+      - db
+    environment:
+      - DB_SERVER=db
+      - POSTGRES_DB=${DB_NAMEV2}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PW}
+      - DB_ACTION=${DB_ACTION}
+    volumes:
+      - db-imagev2:/home/uploads
+
+volumes:
+  db-data:
+  db-imagev2:
+  # backendreportes:
+  #   container_name: backendreportes
+  #   image: sbreportes:latest
+  #   build: ./informes
+  #   restart: always
+  #   ports:
+  #     - 8092:8092
+  #   depends_on:
+  #     - db
+  # frontend:
+  #   container_name: frontend
+  #   image: angular:latest
+  #   build: ./frontend
+  #   restart: always
+  #   ports:
+  #     - 80:80
+  # middleware:
+  #   container_name: middleware
+  #   image: middleware:latest
+  #   build: ./middleware
+  #   restart: always
+  #   ports:
+  #     - 4000:4000
+# volumes:
+#   db-data:
+  # db-image:
+  # db-imagev2:
